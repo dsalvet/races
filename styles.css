@@ -200,6 +200,22 @@ main { max-width: 1200px; margin: 0 auto; padding: 40px 20px 60px; }
   padding: 8px 12px;
   font-size: 0.85rem;
 }
+.calendar-date-button {
+  border: 0;
+  background: transparent;
+  color: var(--clr-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.calendar-date-button:hover {
+  color: var(--clr-primary-d);
+}
+
 .card-target .label { color: var(--clr-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .card-target .value { font-weight: 700; color: var(--clr-success); font-size: 1rem; }
 .card-target .subvalue { margin-top: 2px; color: var(--clr-muted); font-size: 0.78rem; }

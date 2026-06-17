@@ -253,6 +253,127 @@ function formatParsedTime(value) {
   return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
+function padIcsNumber(value) {
+  return String(value).padStart(2, '0');
+}
+
+function toIcsDate(date) {
+  return `${date.getUTCFullYear()}${padIcsNumber(date.getUTCMonth() + 1)}${padIcsNumber(date.getUTCDate())}`;
+}
+
+function toIcsDateTime(date) {
+  return `${toIcsDate(date)}T${padIcsNumber(date.getUTCHours())}${padIcsNumber(date.getUTCMinutes())}${padIcsNumber(date.getUTCSeconds())}Z`;
+}
+
+function escapeIcsText(value) {
+  return String(value || '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\r?\n/g, '\\n')
+    .replace(/,/g, '\\,')
+    .replace(/;/g, '\\;');
+}
+
+function buildRaceDescription(race) {
+  const lines = [];
+  if (race.distanceLabel) lines.push(`Distance: ${race.distanceLabel}`);
+  if (race.targetTime) lines.push(`Target time: ${formatTime(race.targetTime)}`);
+  if (race.price !== null && race.price !== undefined) lines.push(`Entry fee: ${formatPrice(race.price, race.currency)}`);
+  if (race.url) lines.push(`Race website: ${race.url}`);
+  if (race.notes) lines.push(`Notes: ${race.notes}`);
+  return lines.join('\n');
+}
+
+function getRaceCalendarWindow(race) {
+  const startTime = (race.startTime || '').trim();
+  const endTime = (race.endTime || '').trim();
+
+  if (!startTime) {
+    const startDate = new Date(`${race.date}T00:00:00Z`);
+    const endDate = new Date(startDate);
+    endDate.setUTCDate(endDate.getUTCDate() + 1);
+    return {
+      start: startDate,
+      end: endDate,
+      allDay: true
+    };
+  }
+
+  const startDate = new Date(`${race.date}T${startTime}`);
+  const endDate = endTime
+    ? new Date(`${race.date}T${endTime}`)
+    : new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
+
+  return {
+    start: startDate,
+    end: endDate,
+    allDay: false
+  };
+}
+
+function raceToIcsEvent(race) {
+  const window = getRaceCalendarWindow(race);
+  const now = new Date();
+  const uid = `${race.id || race.name.replace(/\s+/g, '-').toLowerCase()}@races.local`;
+  const lines = [
+    'BEGIN:VEVENT',
+    `UID:${escapeIcsText(uid)}`,
+    `DTSTAMP:${toIcsDateTime(now)}`,
+    `SUMMARY:${escapeIcsText(race.name)}`
+  ];
+
+  if (window.allDay) {
+    lines.push(`DTSTART;VALUE=DATE:${toIcsDate(window.start)}`);
+    lines.push(`DTEND;VALUE=DATE:${toIcsDate(window.end)}`);
+  } else {
+    lines.push(`DTSTART:${toIcsDateTime(window.start)}`);
+    lines.push(`DTEND:${toIcsDateTime(window.end)}`);
+  }
+
+  if (race.location) lines.push(`LOCATION:${escapeIcsText(race.location)}`);
+  if (race.url) lines.push(`URL:${escapeIcsText(race.url)}`);
+
+  const description = buildRaceDescription(race);
+  if (description) lines.push(`DESCRIPTION:${escapeIcsText(description)}`);
+
+  lines.push('END:VEVENT');
+  return lines.join('\r\n');
+}
+
+function buildCalendarIcs(races) {
+  const sorted = [...races].sort((a, b) => a.date.localeCompare(b.date));
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//My Running Races//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:My Running Races',
+    ...sorted.map(raceToIcsEvent),
+    'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+function downloadCalendarFile(filename, content) {
+  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function slugify(value) {
+  return String(value || 'race')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'race';
+}
+
 function normaliseTags(tags) {
   const source = Array.isArray(tags) ? tags : [];
   const cleaned = source
@@ -279,6 +400,8 @@ function normalizeRaceEntry(race) {
     notes: (race.notes || '').trim(),
     location: normaliseLocation(race.location || ''),
     currency: (race.currency || 'CZK').trim(),
+    startTime: (race.startTime || '').trim(),
+    endTime: (race.endTime || '').trim(),
     stravaUrl: (race.stravaUrl || '').trim(),
     tags: normaliseTags(race.tags),
     distanceLabel: (race.distanceLabel || inferDistanceLabel(race.distance)).trim(),
@@ -394,7 +517,7 @@ function renderUpcoming() {
         <span class="distance-pill">${esc(r.distanceLabel)}</span>
       </div>
       <div class="meta-row">
-        <span>📅 ${formatDate(r.date)}</span>
+        <button type="button" class="calendar-date-button" data-race-id="${esc(r.id)}" title="Add ${esc(r.name)} to Apple Calendar">📅 ${formatDate(r.date)}</button>
         <span>⏳ ${daysLabel}</span>
       </div>
       <div class="meta-row">
@@ -410,6 +533,19 @@ function renderUpcoming() {
       ${r.notes ? `<div class="card-notes">${esc(r.notes)}</div>` : ''}
     </article>`;
   }).join('');
+}
+
+function initCalendarExport() {
+  document.getElementById('upcoming-grid')?.addEventListener('click', event => {
+    const button = event.target.closest('.calendar-date-button');
+    if (!button) return;
+
+    const race = racesData.upcoming.find(entry => entry.id === button.dataset.raceId);
+    if (!race) return;
+
+    const content = buildCalendarIcs([race]);
+    downloadCalendarFile(`${race.date}-${slugify(race.name)}.ics`, content);
+  });
 }
 
 /* ======================================================
@@ -693,6 +829,7 @@ applyDataConsistency();
 renderStats();
 renderPBs();
 renderUpcoming();
+initCalendarExport();
 initMapControls();
 renderRaceMap();
 initPastFilters();

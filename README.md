@@ -5,6 +5,7 @@ A lightweight, single-page overview of all my running races — past results and
 ## Features
 
 - **Upcoming races** — displayed as cards with date, location, distance, price and target time
+- **Apple Calendar export** — click an upcoming race date to download an `.ics` file for Apple Calendar
 - **Past race results** — sortable table showing:
   - Chip time (net) and gun time (gross)
   - Target time and how the actual result compared (faster / slower)
@@ -19,6 +20,7 @@ A lightweight, single-page overview of all my running races — past results and
    - `racesData.upcoming` — races that haven't happened yet
    - `racesData.past` — completed races with results
 3. The page re-renders automatically on every load.
+4. Click an upcoming race date to download an `.ics` file for that race.
 
 ## Files
 
@@ -42,8 +44,12 @@ A lightweight, single-page overview of all my running races — past results and
 | `price` | number | Entry fee |
 | `currency` | string | Currency code, e.g. `"CZK"` |
 | `targetTime` | string | Goal time in `H:MM:SS` format |
+| `startTime` | string | Optional local start time in `HH:MM` or `HH:MM:SS` for timed calendar events |
+| `endTime` | string | Optional local end time in `HH:MM` or `HH:MM:SS` for timed calendar events |
 | `url` | string | Race website (optional) |
 | `notes` | string | Any notes (optional) |
+
+If `startTime` is omitted, the calendar export creates an all-day event for that race date. Apple Calendar can import the downloaded `.ics` file directly.
 
 ### Past race (all upcoming fields plus)
 | Field | Type | Description |
