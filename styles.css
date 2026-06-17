@@ -73,6 +73,53 @@ body {
   color: var(--clr-muted);
 }
 
+/* ===== Personal bests ===== */
+.pbs-section {
+  max-width: 1200px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+}
+
+.pbs-header {
+  margin-bottom: 14px;
+}
+
+.pbs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.pb-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 14px 16px;
+}
+
+.pb-label {
+  color: var(--clr-muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.pb-value {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--clr-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pb-meta {
+  margin-top: 5px;
+  color: var(--clr-muted);
+  font-size: 0.78rem;
+}
+
 /* ===== Main layout ===== */
 main { max-width: 1200px; margin: 0 auto; padding: 40px 20px 60px; }
 

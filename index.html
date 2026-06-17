@@ -22,6 +22,16 @@
   <!-- filled by JS -->
 </div>
 
+<!-- Personal bests -->
+<section class="pbs-section" id="pbs-section">
+  <div class="section-header pbs-header">
+    <h2>Personal Bests</h2>
+  </div>
+  <div class="pbs-grid" id="pbs-grid">
+    <!-- filled by JS -->
+  </div>
+</section>
+
 <main>
 
   <!-- Upcoming races -->
@@ -132,7 +142,7 @@ function daysUntil(dateStr) {
 }
 
 function formatPrice(price, currency) {
-  if (!price) return '—';
+  if (price === null || price === undefined) return '—';
   return `${price.toLocaleString()} ${currency}`;
 }
 
@@ -140,6 +150,10 @@ function esc(str) {
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function distanceMatches(value, target) {
+  return typeof value === 'number' && Math.abs(value - target) < 0.01;
 }
 
 /* ======================================================
@@ -170,6 +184,43 @@ function renderStats() {
       <span class="stat-label">${s.label}</span>
     </div>`
   ).join('');
+}
+
+/* ======================================================
+   Personal bests
+====================================================== */
+function renderPBs() {
+  const definitions = [
+    { label: '5 km', distance: 5 },
+    { label: '10 km', distance: 10 },
+    { label: 'Half Marathon', distance: 21.097 },
+    { label: 'Marathon', distance: 42.195 }
+  ];
+
+  const cards = definitions.map(def => {
+    const candidates = racesData.past
+      .filter(r => distanceMatches(r.distance, def.distance) && parseTime(r.chipTime) !== null)
+      .map(r => ({ race: r, secs: parseTime(r.chipTime) }));
+
+    if (!candidates.length) {
+      return `<article class="pb-card">
+        <div class="pb-label">${def.label}</div>
+        <div class="pb-value">—</div>
+        <div class="pb-meta">No result yet</div>
+      </article>`;
+    }
+
+    candidates.sort((a, b) => a.secs - b.secs);
+    const best = candidates[0].race;
+
+    return `<article class="pb-card">
+      <div class="pb-label">${def.label}</div>
+      <div class="pb-value">${formatTime(best.chipTime)}</div>
+      <div class="pb-meta">${esc(best.name)} • ${formatDate(best.date)}</div>
+    </article>`;
+  });
+
+  document.getElementById('pbs-grid').innerHTML = cards.join('');
 }
 
 /* ======================================================
@@ -305,6 +356,7 @@ function initSorting() {
    Boot
 ====================================================== */
 renderStats();
+renderPBs();
 renderUpcoming();
 renderPast();
 initSorting();
