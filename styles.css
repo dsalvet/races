@@ -86,7 +86,7 @@ body {
 
 .pbs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 14px;
 }
 
@@ -202,7 +202,191 @@ main { max-width: 1200px; margin: 0 auto; padding: 40px 20px 60px; }
 }
 .card-target .label { color: var(--clr-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
 .card-target .value { font-weight: 700; color: var(--clr-success); font-size: 1rem; }
+.card-target .subvalue { margin-top: 2px; color: var(--clr-muted); font-size: 0.78rem; }
 .card-notes { font-size: 0.8rem; color: var(--clr-muted); font-style: italic; border-top: 1px solid var(--clr-border); padding-top: 8px; }
+
+.race-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.race-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.race-tag-road {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.race-tag-trail {
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.race-tag-strava {
+  background: #fc4c02;
+  color: #fff;
+  text-decoration: none;
+}
+
+.race-tag-strava:hover {
+  background: #de4301;
+  color: #fff;
+}
+
+/* ===== Race map ===== */
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.map-legend,
+.map-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  color: var(--clr-muted);
+  font-size: 0.84rem;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.legend-dot-raced { background: #16a34a; }
+.legend-dot-planned { background: #f97316; }
+.legend-dot-both { background: #1a6ef5; }
+
+.map-toggles input {
+  accent-color: var(--clr-primary);
+}
+
+.map-wrapper {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 10px;
+}
+
+#race-map {
+  width: 100%;
+  height: clamp(280px, 45vw, 460px);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.map-popup-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 0.8rem;
+}
+
+.map-popup-title {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--clr-muted);
+}
+
+.map-popup-list li {
+  margin-bottom: 2px;
+}
+
+/* ===== Progress chart ===== */
+
+/* ===== Filters ===== */
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.filters-bar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  color: var(--clr-muted);
+}
+
+.filter-tags {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.filter-tags-label {
+  color: var(--clr-muted);
+  font-size: 0.82rem;
+  margin-right: 2px;
+}
+
+.filter-tags label {
+  border: none;
+  padding: 0;
+  gap: 6px;
+  background: transparent;
+  color: var(--clr-text);
+}
+
+.filter-tags input {
+  accent-color: var(--clr-primary);
+}
+
+.filters-bar select,
+.filters-bar button {
+  border: 1px solid var(--clr-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--clr-text);
+  font-size: 0.82rem;
+  padding: 6px 8px;
+}
+
+.filters-bar button {
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.filters-bar button:hover {
+  background: var(--clr-primary);
+  color: #fff;
+}
 
 /* ===== Past Races Table ===== */
 .table-wrapper {
@@ -270,4 +454,6 @@ footer {
   .hero { padding: 40px 16px 32px; }
   .stats-bar { gap: 16px; }
   .stat-value { font-size: 1.3rem; }
+  #race-map { height: 300px; }
+  .filters-bar label { width: 100%; justify-content: space-between; }
 }
