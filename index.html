@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Running Races</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Hero -->
+<header class="hero">
+  <h1>🏃 My <span>Running Races</span></h1>
+  <p>Upcoming races, results, times &amp; goals — all in one place</p>
+</header>
+
+<!-- Stats bar -->
+<div class="stats-bar" id="stats-bar">
+  <!-- filled by JS -->
+</div>
+
+<main>
+
+  <!-- Upcoming races -->
+  <section id="upcoming-section" style="margin-bottom:48px">
+    <div class="section-header">
+      <h2>Upcoming Races</h2>
+      <span class="badge badge-upcoming" id="upcoming-count"></span>
+    </div>
+    <div class="cards-grid" id="upcoming-grid">
+      <!-- filled by JS -->
+    </div>
+  </section>
+
+  <!-- Past races -->
+  <section id="past-section">
+    <div class="section-header">
+      <h2>Race Results</h2>
+      <span class="badge badge-past" id="past-count"></span>
+    </div>
+    <div class="table-wrapper">
+      <table id="past-table">
+        <thead>
+          <tr>
+            <th class="sortable sorted" data-col="date">Date</th>
+            <th>Race</th>
+            <th>Distance</th>
+            <th class="sortable" data-col="target">Target</th>
+            <th class="sortable" data-col="chip">Chip Time</th>
+            <th class="sortable" data-col="gun">Gun Time</th>
+            <th>vs Target</th>
+            <th class="sortable" data-col="price">Price</th>
+            <th>Finish</th>
+          </tr>
+        </thead>
+        <tbody id="past-tbody">
+          <!-- filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Updated automatically from <code>data.js</code> &mdash; edit that file to add races.</p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+/* ======================================================
+   Helpers
+====================================================== */
+function parseTime(str) {
+  // Accepts "H:MM:SS" or "M:SS" — returns total seconds
+  if (!str) return null;
+  const parts = str.split(':').map(Number);
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return null;
+}
+
+function formatTime(str) {
+  // Normalise to always show H:MM:SS
+  if (!str) return '—';
+  const secs = parseTime(str);
+  if (secs === null) return str;
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function timeDiff(chipStr, targetStr) {
+  // Returns signed difference in seconds (chip − target)
+  const chip = parseTime(chipStr);
+  const target = parseTime(targetStr);
+  if (chip === null || target === null) return null;
+  return chip - target;
+}
+
+function formatDiff(diffSecs) {
+  if (diffSecs === null) return { text: '—', cls: 'time-neutral' };
+  const abs = Math.abs(diffSecs);
+  const h = Math.floor(abs / 3600);
+  const m = Math.floor((abs % 3600) / 60);
+  const s = abs % 60;
+  const parts = [];
+  if (h) parts.push(`${h}h`);
+  if (m) parts.push(`${m}m`);
+  parts.push(`${s}s`);
+  const sign = diffSecs < 0 ? '−' : '+';
+  return {
+    text: `${sign}${parts.join(' ')}`,
+    cls: diffSecs < 0 ? 'time-faster' : 'time-slower'
+  };
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function daysUntil(dateStr) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+function formatPrice(price, currency) {
+  if (!price) return '—';
+  return `${price.toLocaleString()} ${currency}`;
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ======================================================
+   Stats bar
+====================================================== */
+function renderStats() {
+  const past = racesData.past;
+  const upcoming = racesData.upcoming;
+
+  const totalRaces = past.length + upcoming.length;
+  const totalDistKm = [...past, ...upcoming].reduce((s, r) => s + r.distance, 0);
+  const totalPrize = past.reduce((s, r) => s + (r.price || 0), 0)
+                   + upcoming.reduce((s, r) => s + (r.price || 0), 0);
+  const pbs = past.filter(r => r.chipTime && r.targetTime && parseTime(r.chipTime) < parseTime(r.targetTime)).length;
+
+  const stats = [
+    { label: 'Total Races', value: totalRaces },
+    { label: 'Completed', value: past.length },
+    { label: 'Upcoming', value: upcoming.length },
+    { label: 'Total Distance', value: `${totalDistKm.toFixed(0)} km` },
+    { label: 'Goals Met', value: `${pbs} / ${past.length}` },
+    { label: 'Total Spent', value: `${totalPrize.toLocaleString()} CZK` }
+  ];
+
+  document.getElementById('stats-bar').innerHTML = stats.map(s =>
+    `<div class="stat-item">
+      <span class="stat-value">${s.value}</span>
+      <span class="stat-label">${s.label}</span>
+    </div>`
+  ).join('');
+}
+
+/* ======================================================
+   Upcoming cards
+====================================================== */
+function renderUpcoming() {
+  const list = [...racesData.upcoming].sort((a, b) => a.date.localeCompare(b.date));
+  document.getElementById('upcoming-count').textContent = `${list.length} race${list.length !== 1 ? 's' : ''}`;
+
+  if (!list.length) {
+    document.getElementById('upcoming-grid').innerHTML =
+      `<div class="empty-state"><strong>No upcoming races yet.</strong><p>Add them in data.js</p></div>`;
+    return;
+  }
+
+  document.getElementById('upcoming-grid').innerHTML = list.map(r => {
+    const days = daysUntil(r.date);
+    const daysLabel = days === 0 ? '🎉 Today!'
+                    : days === 1 ? 'Tomorrow'
+                    : days > 0  ? `in ${days} days`
+                    : `${Math.abs(days)} days ago`;
+    const nameHtml = r.url
+      ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a>`
+      : esc(r.name);
+
+    return `<article class="race-card">
+      <div class="card-header">
+        <div class="card-name">${nameHtml}</div>
+        <span class="distance-pill">${esc(r.distanceLabel)}</span>
+      </div>
+      <div class="meta-row">
+        <span>📅 ${formatDate(r.date)}</span>
+        <span>⏳ ${daysLabel}</span>
+      </div>
+      <div class="meta-row">
+        <span>📍 ${esc(r.location)}</span>
+        <span>💰 ${formatPrice(r.price, r.currency)}</span>
+      </div>
+      <div class="card-target">
+        <div class="label">Target Time</div>
+        <div class="value">${formatTime(r.targetTime)}</div>
+      </div>
+      ${r.notes ? `<div class="card-notes">${esc(r.notes)}</div>` : ''}
+    </article>`;
+  }).join('');
+}
+
+/* ======================================================
+   Past results table
+====================================================== */
+let sortCol = 'date';
+let sortAsc = false; // newest first by default
+
+function renderPast() {
+  const list = [...racesData.past];
+
+  // Sort
+  list.sort((a, b) => {
+    let va, vb;
+    switch (sortCol) {
+      case 'date':   va = a.date; vb = b.date; break;
+      case 'target': va = parseTime(a.targetTime) ?? Infinity; vb = parseTime(b.targetTime) ?? Infinity; break;
+      case 'chip':   va = parseTime(a.chipTime)   ?? Infinity; vb = parseTime(b.chipTime)   ?? Infinity; break;
+      case 'gun':    va = parseTime(a.gunTime)     ?? Infinity; vb = parseTime(b.gunTime)    ?? Infinity; break;
+      case 'price':  va = a.price ?? 0; vb = b.price ?? 0; break;
+      default: va = a.date; vb = b.date;
+    }
+    if (va < vb) return sortAsc ? -1 : 1;
+    if (va > vb) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  document.getElementById('past-count').textContent = `${list.length} race${list.length !== 1 ? 's' : ''}`;
+
+  if (!list.length) {
+    document.getElementById('past-tbody').innerHTML =
+      `<tr><td colspan="9" class="empty-state"><strong>No past races yet.</strong></td></tr>`;
+    return;
+  }
+
+  document.getElementById('past-tbody').innerHTML = list.map(r => {
+    const diff = timeDiff(r.chipTime, r.targetTime);
+    const { text: diffText, cls: diffCls } = formatDiff(diff);
+    const nameHtml = r.url
+      ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.name)}</a>`
+      : esc(r.name);
+    const posHtml = (r.position && r.totalParticipants)
+      ? `<span class="pos-badge">${r.position} / ${r.totalParticipants}</span>`
+      : r.position ? `<span class="pos-badge">${r.position}</span>` : '—';
+
+    return `<tr>
+      <td>${formatDate(r.date)}</td>
+      <td class="race-name-cell">
+        ${nameHtml}
+        ${r.notes ? `<div class="sub">${esc(r.notes)}</div>` : ''}
+      </td>
+      <td>${esc(r.distanceLabel)}</td>
+      <td class="time-cell">${formatTime(r.targetTime)}</td>
+      <td class="time-cell ${diff !== null ? (diff < 0 ? 'time-faster' : 'time-slower') : ''}">${formatTime(r.chipTime)}</td>
+      <td class="time-cell time-neutral">${formatTime(r.gunTime)}</td>
+      <td class="time-cell ${diffCls}">${diffText}</td>
+      <td>${formatPrice(r.price, r.currency)}</td>
+      <td>${posHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ======================================================
+   Sorting
+====================================================== */
+function initSorting() {
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (sortCol === col) {
+        sortAsc = !sortAsc;
+      } else {
+        sortCol = col;
+        sortAsc = col !== 'date'; // default: dates descending, times ascending
+      }
+      // Update header classes
+      document.querySelectorAll('thead th').forEach(h => {
+        h.classList.remove('sorted', 'asc');
+      });
+      th.classList.add('sorted');
+      if (sortAsc) th.classList.add('asc');
+      renderPast();
+    });
+  });
+}
+
+/* ======================================================
+   Boot
+====================================================== */
+renderStats();
+renderUpcoming();
+renderPast();
+initSorting();
+</script>
+</body>
+</html>
