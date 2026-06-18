@@ -6,6 +6,7 @@ A lightweight, single-page overview of all my running races — past results and
 
 - **Upcoming races** — displayed as cards with date, location, distance, price and target time
 - **Apple Calendar export** — click an upcoming race date to download an `.ics` file for Apple Calendar
+- **Race galleries** — add photos per race and browse them in a dedicated gallery section
 - **Past race results** — sortable table showing:
   - Chip time (net) and gun time (gross)
   - Target time and how the actual result compared (faster / slower)
@@ -46,6 +47,7 @@ A lightweight, single-page overview of all my running races — past results and
 | `targetTime` | string | Goal time in `H:MM:SS` format |
 | `startTime` | string | Optional local start time in `HH:MM` or `HH:MM:SS` for timed calendar events |
 | `endTime` | string | Optional local end time in `HH:MM` or `HH:MM:SS` for timed calendar events |
+| `photos` | array | Optional list of race photos (strings or objects with `src`, `alt`, `caption`) |
 | `url` | string | Race website (optional) |
 | `notes` | string | Any notes (optional) |
 
@@ -59,3 +61,16 @@ If `startTime` is omitted, the calendar export creates an all-day event for that
 | `position` | number | Finish position in category / overall |
 | `totalParticipants` | number | Total starters |
 | `bib` | string | Bib number |
+
+### Photos field examples
+
+```js
+photos: [
+  "https://example.com/race-photo-1.jpg",
+  {
+    src: "https://example.com/race-photo-2.jpg",
+    alt: "Crossing the finish line",
+    caption: "Final sprint"
+  }
+]
+```

@@ -71,6 +71,20 @@ const racesData = {
       url: "https://www.christmasrun.cz/zavody/-343-praha.html",
       stravaUrl: "",
       notes: ""
+    },
+    {
+      id: "u6",
+      name: "Istria 100 by UTMB 100K Category 2027",
+      date: "2027-04-03",
+      location: "Istria, HR",
+      distance: 111,
+      tags: ["trail"],
+      distanceLabel: "100K Category",
+      price: 0,
+      currency: "EUR",
+      targetTime: "",
+      url: "https://istria.utmb.world/races/110K",
+      notes: "Official race distance is 111 km"
     }
   ],
   past: [
@@ -163,6 +177,16 @@ const racesData = {
       bib: "1864",
       url: "https://www.runczech.com/en/result-detail?result_id=1425434",
       stravaUrl: "https://www.strava.com/activities/18719611882#",
+      photos: [
+        {
+          src: "photos/ceske-budejovice/mattoni-half-marathon-2026/web/ceske-budejovice-2026-01.jpg",
+          alt: "Mattoni Half Marathon Ceske Budejovice 2026 race photo 1"
+        },
+        {
+          src: "photos/ceske-budejovice/mattoni-half-marathon-2026/web/ceske-budejovice-2026-02.jpg",
+          alt: "Mattoni Half Marathon Ceske Budejovice 2026 race photo 2"
+        }
+      ],
       notes: ""
     },
     {
