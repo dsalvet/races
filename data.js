@@ -79,9 +79,9 @@ const racesData = {
       location: "Istria, HR",
       distance: 111,
       tags: ["trail"],
-      distanceLabel: "100K Category",
-      price: 0,
-      currency: "EUR",
+      distanceLabel: "111 km",
+      price: 6350,
+      currency: "CZK",
       targetTime: "",
       url: "https://istria.utmb.world/races/110K",
       notes: "Official race distance is 111 km"
