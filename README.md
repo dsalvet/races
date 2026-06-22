@@ -6,7 +6,8 @@ A lightweight, single-page overview of all my running races — past results and
 
 - **Upcoming races** — displayed as cards with date, location, distance, price and target time
 - **Apple Calendar export** — click an upcoming race date to download an `.ics` file for Apple Calendar
-- **Race galleries** — add photos per race and browse them in a dedicated gallery section
+- **Race galleries** — add photos per race and browse them on a dedicated gallery page
+- **Running gear** — keep a simple inventory of shoes, watches, vests, and other kit
 - **Past race results** — sortable table showing:
   - Chip time (net) and gun time (gross)
   - Target time and how the actual result compared (faster / slower)
@@ -20,14 +21,18 @@ A lightweight, single-page overview of all my running races — past results and
 2. Edit **`data.js`** to add, remove or update races:
    - `racesData.upcoming` — races that haven't happened yet
    - `racesData.past` — completed races with results
-3. The page re-renders automatically on every load.
-4. Click an upcoming race date to download an `.ics` file for that race.
+3. The home page re-renders automatically on every load.
+4. Open `gallery.html` to browse race photos.
+5. Open `gear.html` to list your running gear.
+6. Click an upcoming race date to download an `.ics` file for that race.
 
 ## Files
 
 | File | Purpose |
 |------|---------|
 | `index.html` | Main page — layout & rendering logic |
+| `gallery.html` | Dedicated race photo gallery |
+| `gear.html` | Running gear inventory |
 | `data.js` | Race data (upcoming + past) |
 | `styles.css` | Styling |
 

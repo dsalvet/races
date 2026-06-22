@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Race Photos | My Running Races</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero hero-gallery">
+    <h1>Race <span>Photos</span></h1>
+    <p>Browse race galleries and step through photos one by one.</p>
+    <div class="hero-actions">
+      <a class="hero-link" href="index.html">Back to races</a>
+    </div>
+  </header>
+
+  <main class="gallery-page">
+    <section id="gallery-section">
+      <div class="section-header">
+        <h2>Race Galleries</h2>
+        <span class="badge badge-past" id="gallery-count"></span>
+      </div>
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- filled by JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Photos come from <a href="index.html">the same race data</a> in <code>data.js</code>.</p>
+  </footer>
+
+  <div class="lightbox" id="gallery-lightbox" hidden aria-hidden="true">
+    <div class="lightbox-backdrop" data-close-lightbox="true"></div>
+    <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Race photo preview">
+      <div class="lightbox-toolbar">
+        <button type="button" class="lightbox-nav" id="lightbox-prev" aria-label="Show previous photo">← Prev</button>
+        <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
+        <button type="button" class="lightbox-nav" id="lightbox-next" aria-label="Show next photo">Next →</button>
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close photo preview">Close</button>
+      </div>
+      <img id="lightbox-image" src="" alt="" />
+      <p class="lightbox-caption" id="lightbox-caption"></p>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script>
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function normaliseLocation(location) {
+    if (!location) return '';
+    return location
+      .replace('Praha', 'Prague')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function normalisePhotos(photos) {
+    if (!Array.isArray(photos)) return [];
+
+    return photos
+      .map((photo, index) => {
+        if (typeof photo === 'string') {
+          const src = photo.trim();
+          if (!src) return null;
+          return {
+            src,
+            alt: `Race photo ${index + 1}`,
+            caption: ''
+          };
+        }
+
+        if (!photo || typeof photo !== 'object') return null;
+
+        const src = String(photo.src || '').trim();
+        if (!src) return null;
+
+        return {
+          src,
+          alt: String(photo.alt || `Race photo ${index + 1}`).trim(),
+          caption: String(photo.caption || '').trim()
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function raceNameWithLinks(race) {
+    return race.url
+      ? `<a href="${esc(race.url)}" target="_blank" rel="noopener">${esc(race.name)}</a>`
+      : esc(race.name);
+  }
+
+  function applyDataConsistency() {
+    racesData.upcoming = racesData.upcoming.map(race => ({
+      ...race,
+      location: normaliseLocation(race.location || ''),
+      photos: normalisePhotos(race.photos)
+    }));
+    racesData.past = racesData.past.map(race => ({
+      ...race,
+      location: normaliseLocation(race.location || ''),
+      photos: normalisePhotos(race.photos)
+    }));
+  }
+
+  function initGalleryLightbox() {
+    const lightbox = document.getElementById('gallery-lightbox');
+    const image = document.getElementById('lightbox-image');
+    const caption = document.getElementById('lightbox-caption');
+    const counter = document.getElementById('lightbox-counter');
+    const prevButton = document.getElementById('lightbox-prev');
+    const nextButton = document.getElementById('lightbox-next');
+    const closeButton = document.getElementById('lightbox-close');
+    const galleryGrid = document.getElementById('gallery-grid');
+
+    if (!lightbox || !image || !caption || !counter || !prevButton || !nextButton || !closeButton || !galleryGrid) return;
+
+    let currentRacePhotos = [];
+    let currentIndex = -1;
+
+    function updateNavState() {
+      const total = currentRacePhotos.length;
+      const hasMultiple = total > 1;
+
+      prevButton.hidden = !hasMultiple;
+      nextButton.hidden = !hasMultiple;
+
+      prevButton.disabled = !hasMultiple || currentIndex <= 0;
+      nextButton.disabled = !hasMultiple || currentIndex >= total - 1;
+
+      counter.textContent = total ? `${currentIndex + 1} / ${total}` : '0 / 0';
+    }
+
+    function showPhotoAt(index) {
+      if (index < 0 || index >= currentRacePhotos.length) return;
+      currentIndex = index;
+
+      const link = currentRacePhotos[currentIndex];
+      const img = link.querySelector('img');
+      const captionEl = link.querySelector('.gallery-photo-caption');
+
+      image.src = link.getAttribute('href') || '';
+      image.alt = img?.getAttribute('alt') || 'Race photo preview';
+
+      const textCaption = captionEl?.textContent?.trim() || '';
+      caption.textContent = textCaption;
+      caption.hidden = !textCaption;
+
+      updateNavState();
+    }
+
+    function closeLightbox() {
+      lightbox.hidden = true;
+      lightbox.setAttribute('aria-hidden', 'true');
+      image.src = '';
+      image.alt = '';
+      caption.textContent = '';
+      currentRacePhotos = [];
+      currentIndex = -1;
+      updateNavState();
+      document.body.classList.remove('lightbox-open');
+    }
+
+    function openLightbox(photoLinks, startIndex) {
+      currentRacePhotos = photoLinks;
+      lightbox.hidden = false;
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-open');
+      showPhotoAt(startIndex);
+      closeButton.focus();
+    }
+
+    galleryGrid.addEventListener('click', event => {
+      const link = event.target.closest('.gallery-photo');
+      if (!link) return;
+
+      event.preventDefault();
+
+      const raceCard = link.closest('.gallery-race-card');
+      const racePhotos = raceCard ? [...raceCard.querySelectorAll('.gallery-photo')] : [];
+      const startIndex = racePhotos.indexOf(link);
+      if (!racePhotos.length || startIndex < 0) return;
+
+      openLightbox(racePhotos, startIndex);
+    });
+
+    lightbox.addEventListener('click', event => {
+      if (event.target instanceof Element && event.target.hasAttribute('data-close-lightbox')) {
+        closeLightbox();
+      }
+    });
+
+    closeButton.addEventListener('click', closeLightbox);
+    prevButton.addEventListener('click', () => showPhotoAt(currentIndex - 1));
+    nextButton.addEventListener('click', () => showPhotoAt(currentIndex + 1));
+
+    document.addEventListener('keydown', event => {
+      if (lightbox.hidden) return;
+
+      if (event.key === 'Escape') {
+        closeLightbox();
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        showPhotoAt(currentIndex - 1);
+        return;
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        showPhotoAt(currentIndex + 1);
+      }
+    });
+  }
+
+  function renderGallery() {
+    const racesWithPhotos = [...racesData.past, ...racesData.upcoming]
+      .filter(race => Array.isArray(race.photos) && race.photos.length > 0)
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    document.getElementById('gallery-count').textContent = `${racesWithPhotos.length} race${racesWithPhotos.length !== 1 ? 's' : ''}`;
+
+    if (!racesWithPhotos.length) {
+      document.getElementById('gallery-grid').innerHTML =
+        `<div class="empty-state"><strong>No race photos yet.</strong><p>Add a <code>photos</code> array to races in data.js.</p></div>`;
+      return;
+    }
+
+    document.getElementById('gallery-grid').innerHTML = racesWithPhotos.map(race => {
+      const nameHtml = raceNameWithLinks(race);
+
+      const photoTiles = race.photos.map(photo => {
+        const captionHtml = photo.caption
+          ? `<div class="gallery-photo-caption">${esc(photo.caption)}</div>`
+          : '';
+
+        return `<a class="gallery-photo" href="${esc(photo.src)}" target="_blank" rel="noopener" aria-label="Open photo from ${esc(race.name)}">
+          <img src="${esc(photo.src)}" alt="${esc(photo.alt)}" loading="lazy" />
+          ${captionHtml}
+        </a>`;
+      }).join('');
+
+      return `<article class="gallery-race-card" data-race-id="${esc(race.id)}">
+        <div class="gallery-race-head">
+          <h3>${nameHtml}</h3>
+          <div class="gallery-race-meta">
+            <span>📅 ${formatDate(race.date)}</span>
+            <span>📍 ${esc(race.location)}</span>
+            <span>🏁 ${esc(race.distanceLabel)}</span>
+          </div>
+        </div>
+        <div class="gallery-photo-grid">${photoTiles}</div>
+      </article>`;
+    }).join('');
+  }
+
+  applyDataConsistency();
+  renderGallery();
+  initGalleryLightbox();
+  </script>
+</body>
+</html>

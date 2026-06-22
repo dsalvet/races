@@ -282,3 +282,97 @@ const racesData = {
     }
   ]
 };
+
+const gearData = [
+  {
+    name: "Nike Vaporfly 4",
+    category: "Shoes",
+    brand: "Nike",
+    model: "Vaporfly 4",
+    status: "active",
+    price: "4573 CZK",
+    url: "https://runrepeat.com/nike-vaporfly-4"
+  },
+  {
+    name: "Adidas Adizero Evo SL Exo",
+    category: "Shoes",
+    brand: "Adidas",
+    model: "Adizero Evo SL Exo",
+    status: "active",
+    price: "1883 CZK",
+    url: "https://runrepeat.com/adidas-adizero-evo-sl"
+  },
+  {
+    name: "Salomon Aero Glide 4",
+    category: "Shoes",
+    brand: "Salomon",
+    model: "Aero Glide 4",
+    status: "active",
+    price: "3011 CZK",
+    url: "https://runrepeat.com/salomon-aero-glide-4"
+  },
+  {
+    name: "Salomon Aero Glide 3",
+    category: "Shoes",
+    brand: "Salomon",
+    model: "Aero Glide 3",
+    status: "retired",
+    price: "3313 CZK",
+    url: "https://runrepeat.com/salomon-aero-glide-3"
+  },
+  {
+    name: "Asics Novablast 4",
+    category: "Shoes",
+    brand: "Asics",
+    model: "Novablast 4",
+    status: "retired",
+    price: "3699 CZK"
+  },
+  {
+    name: "Saucony Endorphin Speed 4",
+    category: "Shoes",
+    brand: "Saucony",
+    model: "Endorphin Speed 4",
+    status: "active",
+    price: "3199 CZK",
+    url: "https://runrepeat.com/saucony-endorphin-speed-4"
+  },
+  {
+    name: "Kiprun KS900 Light",
+    category: "Shoes",
+    brand: "Kiprun",
+    model: "KS900 Light",
+    status: "retired",
+    price: "1799 CZK"
+  },
+  {
+    name: "Nike Vomero 18 GTX",
+    category: "Shoes",
+    brand: "Nike",
+    model: "Vomero 18 GTX",
+    status: "active",
+    price: "3485 CZK",
+    url: "https://runrepeat.com/nike-vomero-18"
+  },
+  {
+    name: "Salomon ADV Skin 12",
+    category: "Running vests",
+    brand: "Salomon",
+    model: "ADV Skin 12",
+    status: "active"
+  },
+  {
+    name: "Leki Evotrail FX.One TA",
+    category: "Running poles",
+    brand: "Leki",
+    model: "Evotrail FX.One TA",
+    price: "2735 CZK"
+  },
+  {
+    name: "Salomon Custom Quiver Ultra",
+    category: "Running vests",
+    brand: "Salomon",
+    model: "Custom Quiver Ultra",
+    price: "671 CZK"
+  }
+];
