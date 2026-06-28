@@ -85,6 +85,20 @@ const racesData = {
       targetTime: "",
       url: "https://istria.utmb.world/races/110K",
       notes: "Official race distance is 111 km"
+    },
+    {
+      id: "u7",
+      name: "Beskydská sedmička 2026",
+      date: "2026-08-28",
+      location: "Třinec, CZ",
+      distance: 100.5,
+      tags: ["trail"],
+      distanceLabel: "100.5 km",
+      price: 3190,
+      currency: "CZK",
+      targetTime: "25:00:00",
+      url: "https://www.beskydskasedmicka.cz/",
+      notes: "Official race distance is 100.5 km"
     }
   ],
   past: [
@@ -333,7 +347,7 @@ const gearData = [
     category: "Shoes",
     brand: "Saucony",
     model: "Endorphin Speed 4",
-    status: "active",
+    status: "retired",
     price: "3199 CZK",
     url: "https://runrepeat.com/saucony-endorphin-speed-4"
   },
@@ -359,13 +373,15 @@ const gearData = [
     category: "Running vests",
     brand: "Salomon",
     model: "ADV Skin 12",
-    status: "active"
+    status: "active",
+    price: "2064 CZK"
   },
   {
     name: "Leki Evotrail FX.One TA",
     category: "Running poles",
     brand: "Leki",
     model: "Evotrail FX.One TA",
+    status: "active",
     price: "2735 CZK"
   },
   {
@@ -373,6 +389,7 @@ const gearData = [
     category: "Running vests",
     brand: "Salomon",
     model: "Custom Quiver Ultra",
+    status: "active",
     price: "671 CZK"
   }
 ];
