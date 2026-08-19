@@ -99,6 +99,20 @@ const racesData = {
       targetTime: "25:00:00",
       url: "https://www.beskydskasedmicka.cz/",
       notes: "Official race distance is 100.5 km"
+    },
+    {
+      id: "u8",
+      name: "Mattoni Running Festival Olomouc 2027",
+      date: "2027-06-12",
+      location: "Olomouc, CZ",
+      distance: 21.097,
+      tags: ["road"],
+      distanceLabel: "Half Marathon",
+      price: 775,
+      currency: "CZK",
+      targetTime: "01:50:00",
+      url: "https://www.runczech.com/cs/akce/mattoni-running-festival-olomouc-2027",
+      notes: ""
     }
   ],
   past: [
