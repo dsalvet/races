@@ -30,6 +30,20 @@ const racesData = {
       notes: ""
     },
     {
+      id: "u3",
+      name: "Prague Park Race Prokopske udoli 2026",
+      date: "2026-10-24",
+      location: "Prague, CZ",
+      distance: 14,
+      tags: ["trail"],
+      distanceLabel: "14 km",
+      price: 450,
+      currency: "CZK",
+      targetTime: "01:40:00",
+      url: "https://pragueparkrace.cz/prokopske-udoli/",
+      notes: ""
+    },
+    {
       id: "u4",
       name: "CEZ RunTour Praha 2026",
       date: "2026-10-03",
