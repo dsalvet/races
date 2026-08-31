@@ -30,31 +30,17 @@ const racesData = {
       notes: ""
     },
     {
-      id: "u3",
-      name: "Třeboňský půlmaraton 2026",
-      date: "2026-10-03",
-      location: "Třeboň, CZ",
-      distance: 21.097,
-      tags: ["trail", "road"],
-      distanceLabel: "Half Marathon",
-      price: 997,
-      currency: "CZK",
-      targetTime: "01:50:00",
-      url: "https://www.bez.cz/startovne/puma-trebonsky-pul-maraton--desitka-a-petka-2026/",
-      notes: ""
-    },
-    {
       id: "u4",
-      name: "CEZ RunTour Pardubice 2026",
-      date: "2026-10-17",
-      location: "Pardubice, CZ",
+      name: "CEZ RunTour Praha 2026",
+      date: "2026-10-03",
+      location: "Praha, CZ",
       distance: 10,
       tags: ["road"],
       distanceLabel: "10 km",
       price: 560,
       currency: "CZK",
       targetTime: "00:49:00",
-      url: "https://www.run-tour.cz/cs/kalendar/pardubice",
+      url: "https://www.run-tour.cz/cs/kalendar/praha",
       notes: ""
     },
     {
