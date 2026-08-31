@@ -411,7 +411,9 @@ function normalizeRaceEntry(race) {
     distanceLabel: (race.distanceLabel || inferDistanceLabel(race.distance)).trim(),
     targetTime: formatParsedTime(race.targetTime),
     chipTime: formatParsedTime(race.chipTime),
-    gunTime: formatParsedTime(race.gunTime)
+    gunTime: formatParsedTime(race.gunTime),
+    resultStatus: (race.resultStatus || '').trim().toUpperCase(),
+    completedDistance: Number(race.completedDistance) || 0
   };
 }
 
@@ -433,19 +435,20 @@ function applyDataConsistency() {
 function renderStats() {
   const past = racesData.past;
   const upcoming = racesData.upcoming;
+  const completed = past.filter(r => r.resultStatus !== 'DNF');
 
   const totalRaces = past.length + upcoming.length;
   const totalDistKm = [...past, ...upcoming].reduce((s, r) => s + r.distance, 0);
   const totalPrize = past.reduce((s, r) => s + (r.price || 0), 0)
                    + upcoming.reduce((s, r) => s + (r.price || 0), 0);
-  const pbs = past.filter(r => r.chipTime && r.targetTime && parseTime(r.chipTime) < parseTime(r.targetTime)).length;
+  const pbs = completed.filter(r => r.chipTime && r.targetTime && parseTime(r.chipTime) < parseTime(r.targetTime)).length;
 
   const stats = [
     { label: 'Total Races', value: totalRaces },
-    { label: 'Completed', value: past.length },
+    { label: 'Completed', value: completed.length },
     { label: 'Upcoming', value: upcoming.length },
     { label: 'Total Distance', value: `${totalDistKm.toFixed(0)} km` },
-    { label: 'Goals Met', value: `${pbs} / ${past.length}` },
+    { label: 'Goals Met', value: `${pbs} / ${completed.length}` },
     { label: 'Total Spent', value: `${totalPrize.toLocaleString()} CZK` }
   ];
 
@@ -720,7 +723,8 @@ function renderPast() {
   }
 
   document.getElementById('past-tbody').innerHTML = list.map(r => {
-    const diff = timeDiff(r.chipTime, r.targetTime);
+    const didNotFinish = r.resultStatus === 'DNF';
+    const diff = didNotFinish ? null : timeDiff(r.chipTime, r.targetTime);
     const { text: diffText, cls: diffCls } = formatDiff(diff);
     const nameHtml = raceNameWithLinks(r);
     const posHtml = (r.position && r.totalParticipants)
@@ -736,9 +740,9 @@ function renderPast() {
       </td>
       <td>${esc(r.distanceLabel)}</td>
       <td class="time-cell">${formatTime(r.targetTime)}</td>
-      <td class="time-cell ${diff !== null ? (diff < 0 ? 'time-faster' : 'time-slower') : ''}">${formatTime(r.chipTime)}</td>
-      <td class="time-cell">${formatPace(paceSeconds(r.chipTime, r.distance))}</td>
-      <td class="time-cell ${diffCls}">${diffText}</td>
+      <td class="time-cell ${didNotFinish ? 'time-slower' : (diff !== null ? (diff < 0 ? 'time-faster' : 'time-slower') : '')}">${didNotFinish ? `DNF · ${formatTime(r.chipTime)}` : formatTime(r.chipTime)}</td>
+      <td class="time-cell">${didNotFinish && r.completedDistance ? `${r.completedDistance} km` : formatPace(paceSeconds(r.chipTime, r.distance))}</td>
+      <td class="time-cell ${diffCls}">${didNotFinish ? '—' : diffText}</td>
       <td>${formatPrice(r.price, r.currency)}</td>
       <td>${posHtml}</td>
     </tr>`;

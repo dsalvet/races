@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"inputs": [
+		{
+			"id": "photoSource",
+			"type": "promptString",
+			"description": "Folder containing photos to optimize"
+		},
+		{
+			"id": "eventSlug",
+			"type": "promptString",
+			"description": "Event folder name, for example beskydska-sedmicka-2026"
+		}
+	],
+	"tasks": [
+		{
+			"label": "optimize-event-photos",
+			"type": "shell",
+			"command": "src='${input:photoSource}'; event='${input:eventSlug}'; dst=\"photos/$event\"; mkdir -p \"$dst\"; i=1; while IFS= read -r f; do out=$(printf '%s-%02d.jpg' \"$event\" \"$i\"); sips -s format jpeg -s formatOptions 80 -Z 1600 \"$f\" --out \"$dst/$out\" >/dev/null; echo \"$f -> $dst/$out\"; i=$((i+1)); done < <(find \"$src\" -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.heic' \\) | sort)",
+			"group": "build"
+		}
+	]
+}

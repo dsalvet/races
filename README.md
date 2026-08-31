@@ -20,11 +20,12 @@ A lightweight, single-page overview of all my running races — past results and
 1. Open `index.html` in any browser (no build step required).
 2. Edit **`data.js`** to add, remove or update races:
    - `racesData.upcoming` — races that haven't happened yet
-   - `racesData.past` — completed races with results
+  - `racesData.past` — races with results, including DNFs
 3. The home page re-renders automatically on every load.
 4. Open `gallery.html` to browse race photos.
 5. Open `gear.html` to list your running gear.
 6. Click an upcoming race date to download an `.ics` file for that race.
+7. Run `Tasks: Run Task` > `optimize-event-photos` to resize an external photo folder into `photos/<event-slug>/`.
 
 ## Files
 
@@ -63,6 +64,8 @@ If `startTime` is omitted, the calendar export creates an all-day event for that
 |-------|------|-------------|
 | `chipTime` | string | Net (chip) time `H:MM:SS` |
 | `gunTime` | string | Gross (gun) time `H:MM:SS` |
+| `resultStatus` | string | Optional result status, such as `DNF` |
+| `completedDistance` | number | Distance reached in km for a DNF |
 | `position` | number | Finish position in category / overall |
 | `totalParticipants` | number | Total starters |
 | `bib` | string | Bib number |
@@ -79,3 +82,5 @@ photos: [
   }
 ]
 ```
+
+For local images, use one folder per event: `photos/<event-slug>/<file-name>.jpg`. See [photos/README.md](photos/README.md) for the convention.

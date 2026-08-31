@@ -87,20 +87,6 @@ const racesData = {
       notes: "Official race distance is 111 km"
     },
     {
-      id: "u7",
-      name: "Beskydská sedmička 2026",
-      date: "2026-08-28",
-      location: "Třinec, CZ",
-      distance: 100.5,
-      tags: ["trail"],
-      distanceLabel: "100.5 km",
-      price: 3190,
-      currency: "CZK",
-      targetTime: "25:00:00",
-      url: "https://www.beskydskasedmicka.cz/",
-      notes: "Official race distance is 100.5 km"
-    },
-    {
       id: "u8",
       name: "Mattoni Running Festival Olomouc 2027",
       date: "2027-06-12",
@@ -116,6 +102,38 @@ const racesData = {
     }
   ],
   past: [
+    {
+      id: "p11",
+      name: "Beskydská sedmička 2026",
+      date: "2026-08-28",
+      location: "Třinec, CZ",
+      distance: 100.5,
+      tags: ["trail"],
+      distanceLabel: "100.5 km",
+      price: 3190,
+      currency: "CZK",
+      targetTime: "25:00:00",
+      chipTime: "05:09:00",
+      gunTime: "",
+      resultStatus: "DNF",
+      completedDistance: 30,
+      url: "https://www.beskydskasedmicka.cz/",
+      photos: [
+        {
+          src: "photos/beskydska-sedmicka-2026/b7-2026-start.jpg",
+          alt: "Runner with bib 336 at the Beskydska sedmicka 2026 start"
+        },
+        {
+          src: "photos/beskydska-sedmicka-2026/b7-2026-on-course.jpg",
+          alt: "Runner resting on the course at Beskydska sedmicka 2026"
+        },
+        {
+          src: "photos/beskydska-sedmicka-2026/b7-2026-team.jpg",
+          alt: "Beskydska sedmicka 2026 runners together at the event"
+        }
+      ],
+      notes: "DNF after 30 km due to injury"
+    },
     {
       id: "p1",
       name: "Mattoni Half Marathon Karlovy Vary 2025",
@@ -207,11 +225,11 @@ const racesData = {
       stravaUrl: "https://www.strava.com/activities/18719611882#",
       photos: [
         {
-          src: "photos/ceske-budejovice/mattoni-half-marathon-2026/web/ceske-budejovice-2026-01.jpg",
+          src: "photos/mattoni-half-marathon-ceske-budejovice-2026/ceske-budejovice-2026-01.jpg",
           alt: "Mattoni Half Marathon Ceske Budejovice 2026 race photo 1"
         },
         {
-          src: "photos/ceske-budejovice/mattoni-half-marathon-2026/web/ceske-budejovice-2026-02.jpg",
+          src: "photos/mattoni-half-marathon-ceske-budejovice-2026/ceske-budejovice-2026-02.jpg",
           alt: "Mattoni Half Marathon Ceske Budejovice 2026 race photo 2"
         }
       ],
