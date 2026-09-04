@@ -74,17 +74,17 @@ const racesData = {
     },
     {
       id: "u6",
-      name: "Istria 100 by UTMB 100K Category 2027",
+      name: "Istria 100 by UTMB - 69K 2027",
       date: "2027-04-03",
       location: "Istria, HR",
-      distance: 111,
+      distance: 69.6,
       tags: ["trail"],
-      distanceLabel: "111 km",
+      distanceLabel: "69.6 km",
       price: 6350,
       currency: "CZK",
-      targetTime: "",
-      url: "https://istria.utmb.world/races/110K",
-      notes: "Official race distance is 111 km"
+      targetTime: "12:00:00",
+      url: "https://istria.utmb.world/races/69K",
+      notes: "69.6 km, 2400 m+, 15 h limit. Point-to-point, Buzet -> Umag."
     },
     {
       id: "u8",
